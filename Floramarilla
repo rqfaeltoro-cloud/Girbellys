@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Girbellys - Flor Amarilla</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(to bottom, #000000, #1a1a1a);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            position: relative;
+        }
+        
+        h1 {
+            color: #FFD700;
+            font-size: 3rem;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #FFA500;
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+        
+        .hearts-container, .flowers-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .heart, .flower {
+            position: absolute;
+            opacity: 0.6;
+            animation: float 6s infinite ease-in-out;
+        }
+        
+        .heart {
+            color: #FFA500;
+            font-size: 24px;
+        }
+        
+        .flower {
+            color: #FFD700;
+            font-size: 30px;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(10deg);
+            }
+        }
+        
+        .game-container {
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 800px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .game-title {
+            text-align: center;
+            color: #FFA500;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .game-instructions {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            border-left: 4px solid #FFD700;
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-gap: 5px;
+            margin: 0 auto;
+            max-width: 500px;
+        }
+        
+        .cell {
+            width: 100%;
+            padding-bottom: 100%;
+            background: #333;
+            border-radius: 5px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .cell:hover {
+            background: #444;
+        }
+        
+        .cell.path {
+            background: #555;
+        }
+        
+        .cell.start {
+            background: #FFD700;
+        }
+        
+        .cell.start::after {
+            content: "🌸";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+        }
+        
+        .cell.end {
+            background: #FFA500;
+        }
+        
+        .cell.end::after {
+            content: "👑";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+        }
+        
+        .player {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #FFD700;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        button {
+            background: #FFA500;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #FFD700;
+            transform: scale(1.05);
+        }
+        
+        .message-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s;
+        }
+        
+        .message-container.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .message {
+            text-align: center;
+            background: linear-gradient(45deg, #000, #1a1a1a);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            border: 2px solid #FFD700;
+            position: relative;
+        }
+        
+        .big-flower {
+            font-size: 10rem;
+            color: #FFD700;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+        
+        .message-text {
+            color: #FFD700;
+            font-size: 2rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        .dedication {
+            color: #FFA500;
+            font-size: 1.5rem;
+            margin-top: 30px;
+            font-style: italic;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #555;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .game-board {
+                grid-template-columns: repeat(10, 1fr);
+                max-width: 100%;
+            }
+            
+            .message-text {
+                font-size: 1.5rem;
+            }
+            
+            .big-flower {
+                font-size: 5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hearts-container" id="hearts"></div>
+    <div class="flowers-container" id="flowers"></div>
+    
+    <div class="container">
+        <header>
+            <h1>Día de la Flor Amarilla</h1>
+            <p class="subtitle">21 de Septiembre - Un regalo especial para Girbellys</p>
+        </header>
+        
+        <div class="game-container">
+            <h2 class="game-title">Lleva la Flor a la Princesa</h2>
+            
+            <div class="game-instructions">
+                <p>💛 <strong>Instrucciones:</strong> Usa los botones de flecha para mover la flor amarilla a través del camino hasta llegar a la princesa. Evita salirte del camino marcado.</p>
+                <p>💝 Cuando llegues a la princesa, descubrirás un mensaje especial.</p>
+            </div>
+            
+            <div class="game-board" id="gameBoard">
+                <!-- El tablero se genera con JavaScript -->
+            </div>
+            
+            <div class="controls">
+                <button id="up">↑</button>
+                <button id="left">←</button>
+                <button id="right">→</button>
+                <button id="down">↓</button>
+                <button id="reset">Reiniciar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="message-container" id="messageContainer">
+        <div class="message">
+            <div class="big-flower">🌻</div>
+            <p class="message-text">Para Girbellys:<br>Te quiero, eres inefable,<br>eres una en un millón,<br>eres una flor amarilla<br>en un jardín de flores oscuras.</p>
+            <p class="dedication">Con todo mi amor 💛</p>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Creado con 💛 para Girbellys - Día de la Flor Amarilla 2023</p>
+    </footer>
+
+    <script>
+        // Crear corazones y flores decorativas
+        function createDecorations() {
+            const heartsContainer = document.getElementById('hearts');
+            const flowersContainer = document.getElementById('flowers');
+            
+            // Crear corazones
+            for (let i = 0; i < 30; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '💛';
+                heart.style.left = `${Math.random() * 100}%`;
+                heart.style.top = `${Math.random() * 100}%`;
+                heart.style.animationDelay = `${Math.random() * 5}s`;
+                heartsContainer.appendChild(heart);
+            }
+            
+            // Crear flores
+            for (let i = 0; i < 25; i++) {
+                const flower = document.createElement('div');
+                flower.classList.add('flower');
+                flower.innerHTML = '🌻';
+                flower.style.left = `${Math.random() * 100}%`;
+                flower.style.top = `${Math.random() * 100}%`;
+                flower.style.animationDelay = `${Math.random() * 5}s`;
+                flowersContainer.appendChild(flower);
+            }
+        }
+        
+        // Configuración del juego
+        const ROWS = 10;
+        const COLS = 10;
+        let playerPosition = { row: 0, col: 0 };
+        
+        // Definir el camino que debe seguir el jugador
+        const path = [
+            {row: 0, col: 0}, {row: 0, col: 1}, {row: 0, col: 2}, {row: 0, col: 3},
+            {row: 1, col: 3}, {row: 2, col: 3}, {row: 2, col: 4}, {row: 2, col: 5},
+            {row: 3, col: 5}, {row: 4, col: 5}, {row: 4, col: 4}, {row: 4, col: 3},
+            {row: 5, col: 3}, {row: 6, col: 3}, {row: 6, col: 4}, {row: 6, col: 5},
+            {row: 6, col: 6}, {row: 6, col: 7}, {row: 7, col: 7}, {row: 8, col: 7},
+            {row: 9, col: 7}
+        ];
+        
+        // Inicializar el juego
+        function initGame() {
+            const gameBoard = document.getElementById('gameBoard');
+            gameBoard.innerHTML = '';
+            
+            // Crear celdas del tablero
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    
+                    // Marcar el camino
+                    if (isInPath(row, col)) {
+                        cell.classList.add('path');
+                    }
+                    
+                    // Marcar el inicio
+                    if (row === 0 && col === 0) {
+                        cell.classList.add('start');
+                    }
+                    
+                    // Marcar el final
+                    if (row === 9 && col === 7) {
+                        cell.classList.add('end');
+                    }
+                    
+                    gameBoard.appendChild(cell);
+                }
+            }
+            
+            // Posicionar al jugador
+            playerPosition = { row: 0, col: 0 };
+            updatePlayerPosition();
+            
+            // Agregar event listeners a los botones
+            document.getElementById('up').addEventListener('click', () => movePlayer(-1, 0));
+            document.getElementById('down').addEventListener('click', () => movePlayer(1, 0));
+            document.getElementById('left').addEventListener('click', () => movePlayer(0, -1));
+            document.getElementById('right').addEventListener('click', () => movePlayer(0, 1));
+            document.getElementById('reset').addEventListener('click', initGame);
+        }
+        
+        // Verificar si una celda está en el camino
+        function isInPath(row, col) {
+            return path.some(point => point.row === row && point.col === col);
+        }
+        
+        // Actualizar la posición del jugador en el tablero
+        function updatePlayerPosition() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                cell.innerHTML = '';
+            });
+            
+            const playerIndex = playerPosition.row * COLS + playerPosition.col;
+            const playerCell = cells[playerIndex];
+            
+            const playerElement = document.createElement('div');
+            playerElement.classList.add('player');
+            playerElement.innerHTML = '🌻';
+            playerCell.appendChild(playerElement);
+        }
+        
+        // Mover al jugador
+        function movePlayer(rowDelta, colDelta) {
+            const newRow = playerPosition.row + rowDelta;
+            const newCol = playerPosition.col + colDelta;
+            
+            // Verificar límites del tablero
+            if (newRow >= 0 && newRow < ROWS && newCol >= 0 && newCol < COLS) {
+                // Verificar si el movimiento es válido (está en el camino)
+                if (isInPath(newRow, newCol)) {
+                    playerPosition = { row: newRow, col: newCol };
+                    updatePlayerPosition();
+                    
+                    // Verificar si llegó al final
+                    if (newRow === 9 && newCol === 7) {
+                        setTimeout(() => {
+                            document.getElementById('messageContainer').classList.add('show');
+                        }, 500);
+                    }
+                }
+            }
+        }
+        
+        // Inicializar la página
+        window.onload = function() {
+            createDecorations();
+            initGame();
+        };
+    </script>
+</body>
+</html>
